@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
+import 'package:posmar/model/children_model.dart';
 import 'package:posmar/model/parent_model.dart';
 
 class FirebaseFetch {
@@ -24,12 +25,76 @@ class FirebaseFetch {
     return parentList;
   }
 
-  Future<void> addParent(ParentModel parent) async {
+  Future<void> addParent(ParentModel parent, String key) async {
     try {
       DatabaseReference ref = FirebaseDatabase.instance.ref().child(
-        'parents/${FirebaseAuth.instance.currentUser!.uid}/${DateTime.fromMillisecondsSinceEpoch(DateTime.now().millisecondsSinceEpoch).toString().replaceAll('-', '').replaceAll(':', '').replaceAll('.', '')}',
+        'parents/${FirebaseAuth.instance.currentUser!.uid}/$key',
       );
       await ref.update(parent.toJson());
+      debugPrint('Data added successfully');
+    } catch (e) {
+      debugPrint('Error: $e');
+    }
+  }
+
+  //Children
+
+  Future<void> createActivity(
+    ChildrenModel children,
+    String keyChild,
+    String key,
+  ) async {
+    try {
+      DatabaseReference ref = FirebaseDatabase.instance.ref().child(
+        'parents/${FirebaseAuth.instance.currentUser!.uid}/$key/children/$keyChild/activity/${DateTime.fromMillisecondsSinceEpoch(DateTime.now().millisecondsSinceEpoch).toString().replaceAll('.', '').replaceAll(':', '').replaceAll('-', '')}',
+      );
+      await ref.update(children.toJson());
+      debugPrint('Data added successfully');
+    } catch (e) {
+      debugPrint('Error: $e');
+    }
+  }
+
+  Future<List<ChildrenModel>> fetchChildren(key) async {
+    DatabaseReference database = FirebaseDatabase.instance.ref();
+    List<ChildrenModel> childrenList = [];
+    try {
+      DataSnapshot snapshot =
+          await database
+              .child(
+                'parents/${FirebaseAuth.instance.currentUser!.uid}/$key/children',
+              )
+              .get();
+      if (snapshot.exists) {
+        Map<Object?, Object?> data = snapshot.value as Map<Object?, Object?>;
+        data.forEach((key, value) {
+          if (value is Map) {
+            childrenList.add(
+              ChildrenModel.fromJson(Map<String, dynamic>.from(value)),
+            );
+            debugPrint('Children data: ${value.toString()}');
+          }
+        });
+      } else {
+        debugPrint('No data available.');
+      }
+    } catch (error) {
+      debugPrint('Error fetching children data: $error');
+      return [];
+    }
+    return childrenList;
+  }
+
+  Future<void> addChildren(
+    Map<String, dynamic> children,
+    String key,
+    String childKey,
+  ) async {
+    try {
+      DatabaseReference ref = FirebaseDatabase.instance.ref().child(
+        'parents/${FirebaseAuth.instance.currentUser!.uid}/$key/children/$childKey',
+      );
+      await ref.update(children);
       debugPrint('Data added successfully');
     } catch (e) {
       debugPrint('Error: $e');

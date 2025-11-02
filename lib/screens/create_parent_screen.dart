@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:posmar/controller/parent_controller.dart';
 import 'package:posmar/model/parent_model.dart';
 
@@ -71,14 +70,24 @@ class _CreateParentScreenState extends State<CreateParentScreen> {
               ),
 
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    controller.createData(
+                    var key = DateTime.fromMillisecondsSinceEpoch(
+                          DateTime.now().millisecondsSinceEpoch,
+                        )
+                        .toString()
+                        .replaceAll('-', '')
+                        .replaceAll(':', '')
+                        .replaceAll('.', '');
+                    await controller.createData(
                       ParentModel(
                         name: _nameController.text,
                         addres: _addessController.text,
                         phone: _phoneController.text,
+                        created_at: DateTime.now().toString(),
+                        key: key,
                       ),
+                      key,
                     );
                     Get.find<ParentController>().getData();
                     Get.back();

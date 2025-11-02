@@ -4,6 +4,7 @@ import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/instance_manager.dart';
 import 'package:posmar/controller/parent_controller.dart';
 import 'package:posmar/screens/create_parent_screen.dart';
+import 'package:posmar/screens/parent_details.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -13,6 +14,19 @@ class HomeScreen extends StatelessWidget {
     final controller = Get.put(ParentController());
     return Scaffold(
       appBar: AppBar(),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Colors.blue),
+              child: Text('Drawer Header'),
+            ),
+            ListTile(title: const Text('Item 1'), onTap: () => {}),
+            ListTile(title: const Text('Item 2'), onTap: () => {}),
+          ],
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
@@ -53,7 +67,12 @@ class HomeScreen extends StatelessWidget {
                       itemCount: controller.parentList.length,
                       itemBuilder: (BuildContext context, int index) {
                         return InkWell(
-                          onTap: Get.offAll(() => CreateParentScreen()),
+                          onTap:
+                              () => Get.to(
+                                () => ParentDetailsScreen(
+                                  parent: controller.parentList[index],
+                                ),
+                              ),
 
                           child: Card(
                             child: Container(
