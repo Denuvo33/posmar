@@ -106,9 +106,9 @@ class _CreateActivityChildrenState extends State<CreateActivityChildren> {
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      controller.createActivity(
+                      await controller.createActivity(
                         ChildrenModel(
                           name: widget.child['name'],
                           dateBorn: widget.child['dateBorn'],
@@ -117,6 +117,7 @@ class _CreateActivityChildrenState extends State<CreateActivityChildren> {
                           tinggiBadan: _tinggiBadan.text,
                           lingkarLengan: _lingkarLengan.text,
                           keterangan: _keterangan.text,
+                          createdAt: DateTime.now().toString(),
                           key:
                               DateTime.fromMillisecondsSinceEpoch(
                                 DateTime.now().millisecondsSinceEpoch,
@@ -125,6 +126,11 @@ class _CreateActivityChildrenState extends State<CreateActivityChildren> {
                         widget.keyParent,
                         widget.child['key'],
                       );
+                      await controller.fetchActivity(
+                        widget.keyParent,
+                        widget.child['key'],
+                      );
+                      Get.back();
                     }
                   },
                   child: Text('Simpan'),

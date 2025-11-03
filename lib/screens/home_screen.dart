@@ -39,10 +39,12 @@ class HomeScreen extends StatelessWidget {
         margin: EdgeInsets.all(10),
         child: Obx(
           () => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SearchBar(),
+              Text('Total Data Orang Tua: ${controller.parentList.length}'),
               controller.isLoading.value
-                  ? CircularProgressIndicator()
+                  ? Center(child: CircularProgressIndicator())
                   : controller.parentList.isEmpty
                   ? Center(
                     child: Column(
@@ -77,7 +79,48 @@ class HomeScreen extends StatelessWidget {
                           child: Card(
                             child: Container(
                               margin: EdgeInsets.all(7),
-                              child: Text(controller.parentList[index].name),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {
+                                          Get.to(
+                                            () => CreateParentScreen(
+                                              parent:
+                                                  controller.parentList[index],
+                                            ),
+                                          );
+                                        },
+                                        icon: Icon(Icons.edit),
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          Get.defaultDialog(
+                                            title: 'Hapus Data',
+                                            middleText: 'Apakah anda yakin?',
+                                            onConfirm: () async {
+                                              await controller.deleteData(
+                                                controller
+                                                    .parentList[index]
+                                                    .key,
+                                              );
+                                              controller.getData();
+                                              Get.back();
+                                            },
+                                            onCancel: () {},
+                                          );
+                                        },
+                                        icon: Icon(Icons.delete),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(controller.parentList[index].name),
+                                ],
+                              ),
                             ),
                           ),
                         );

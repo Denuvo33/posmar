@@ -4,7 +4,8 @@ import 'package:posmar/controller/parent_controller.dart';
 import 'package:posmar/model/parent_model.dart';
 
 class CreateParentScreen extends StatefulWidget {
-  const CreateParentScreen({super.key});
+  final ParentModel? parent;
+  const CreateParentScreen({super.key, this.parent});
 
   @override
   State<CreateParentScreen> createState() => _CreateParentScreenState();
@@ -27,9 +28,24 @@ class _CreateParentScreenState extends State<CreateParentScreen> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if (widget.parent != null) {
+      _nameController.text = widget.parent!.name;
+      _addessController.text = widget.parent!.addres;
+      _phoneController.text = widget.parent!.phone;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Tambah Orang Tua')),
+      appBar: AppBar(
+        title: Text(
+          widget.parent == null ? 'Tambah Orang Tua' : 'Edit Orang Tua',
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -79,16 +95,31 @@ class _CreateParentScreenState extends State<CreateParentScreen> {
                         .replaceAll('-', '')
                         .replaceAll(':', '')
                         .replaceAll('.', '');
-                    await controller.createData(
-                      ParentModel(
-                        name: _nameController.text,
-                        addres: _addessController.text,
-                        phone: _phoneController.text,
-                        created_at: DateTime.now().toString(),
-                        key: key,
-                      ),
-                      key,
-                    );
+                    if (widget.parent != null) key = widget.parent!.key;
+                    if (widget.parent == null) {
+                      await controller.createData(
+                        ParentModel(
+                          name: _nameController.text,
+                          addres: _addessController.text,
+                          phone: _phoneController.text,
+                          created_at: DateTime.now().toString(),
+                          key: key,
+                        ),
+                        key,
+                      );
+                    } else {
+                      await controller.updateData(
+                        ParentModel(
+                          name: _nameController.text,
+                          addres: _addessController.text,
+                          phone: _phoneController.text,
+                          key: key,
+                          created_at: widget.parent!.created_at,
+                        ),
+                        key,
+                      );
+                    }
+
                     Get.find<ParentController>().getData();
                     Get.back();
                   }

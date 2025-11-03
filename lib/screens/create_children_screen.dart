@@ -70,6 +70,7 @@ class _CreateChildrenScreenState extends State<CreateChildrenScreen> {
                 ),
 
                 TextFormField(
+                  decoration: InputDecoration(labelText: 'Tanggal Lahir'),
                   controller: _dateBornController,
                   readOnly: true,
                   onTap: _selectDate,

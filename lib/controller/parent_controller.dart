@@ -6,6 +6,7 @@ import 'package:posmar/service/firebase_fetch.dart';
 class ParentController extends GetxController {
   var parentList = <ParentModel>[].obs;
   var childrenList = <ChildrenModel>[].obs;
+  var activityList = <ChildrenModel>[].obs;
   var isLoading = true.obs;
   final service = FirebaseFetch();
   @override
@@ -42,8 +43,26 @@ class ParentController extends GetxController {
     return await service.createActivity(children, keyChild, key);
   }
 
+  Future<void> fetchActivity(String key, String keyChild) async {
+    isLoading(true);
+    await service.fetchActivity(key, keyChild).then((value) {
+      activityList.value = value;
+      isLoading(false);
+    });
+  }
+
   //Create Parent
   Future<void> createData(ParentModel parent, String key) async {
     await service.addParent(parent, key);
+  }
+
+  //Delete Parent
+  Future<void> deleteData(String key) async {
+    await service.deleteParent(key);
+  }
+
+  //Update Parent
+  Future<void> updateData(ParentModel parent, String key) async {
+    await service.updateParent(parent, key);
   }
 }

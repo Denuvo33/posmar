@@ -5,6 +5,7 @@ import 'package:posmar/model/children_model.dart';
 import 'package:posmar/model/parent_model.dart';
 
 class FirebaseFetch {
+  //Parent
   Future<List<ParentModel>> fetchParent() async {
     DatabaseReference ref = FirebaseDatabase.instance.ref().child('parents');
     DataSnapshot snapshot =
@@ -37,7 +38,30 @@ class FirebaseFetch {
     }
   }
 
-  //Children
+  Future<void> updateParent(ParentModel parent, String key) async {
+    try {
+      DatabaseReference ref = FirebaseDatabase.instance.ref().child(
+        'parents/${FirebaseAuth.instance.currentUser!.uid}/$key',
+      );
+      await ref.update(parent.toJson());
+      debugPrint('Data updated successfully');
+    } catch (e) {
+      debugPrint('Error: $e');
+    }
+  }
+
+  Future<void> deleteParent(key) async {
+    try {
+      DatabaseReference db = FirebaseDatabase.instance.ref(
+        'parents/${FirebaseAuth.instance.currentUser!.uid}',
+      );
+      await db.child(key).remove();
+    } catch (e) {
+      debugPrint('Error $e');
+    }
+  }
+
+  //Activity
 
   Future<void> createActivity(
     ChildrenModel children,
@@ -54,6 +78,35 @@ class FirebaseFetch {
       debugPrint('Error: $e');
     }
   }
+
+  Future<List<ChildrenModel>> fetchActivity(
+    String keyParent,
+    String keyChildren,
+  ) async {
+    try {
+      DatabaseReference db = FirebaseDatabase.instance.ref(
+        'parents/${FirebaseAuth.instance.currentUser!.uid}/$keyParent/children/$keyChildren/activity',
+      );
+      DataSnapshot snapshot = await db.get();
+      List<ChildrenModel> activityList = [];
+      if (snapshot.exists) {
+        Map<Object?, Object?> data = snapshot.value as Map<Object?, Object?>;
+        data.forEach((key, value) {
+          if (value is Map) {
+            activityList.add(
+              ChildrenModel.fromJson(Map<String, dynamic>.from(value)),
+            );
+          }
+        });
+      }
+      return activityList;
+    } catch (e) {
+      debugPrint('Error: $e');
+      return [];
+    }
+  }
+
+  //Children
 
   Future<List<ChildrenModel>> fetchChildren(key) async {
     DatabaseReference database = FirebaseDatabase.instance.ref();
