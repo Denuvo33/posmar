@@ -101,32 +101,28 @@ class _LoginScreensState extends State<LoginScreens> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Logo/Icon
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.green[700]!, Colors.green[500]!],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.green.withOpacity(0.3),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.health_and_safety,
-                      size: 80,
-                      color: Colors.white,
-                    ),
-                  ),
+                  Image.asset('images/logo.png'),
 
-                  const SizedBox(height: 40),
+                  // Logo/Icon
+                  // Container(
+                  //   padding: const EdgeInsets.all(24),
+                  //   decoration: BoxDecoration(
+                  //     gradient: LinearGradient(
+                  //       colors: [Colors.green[700]!, Colors.green[500]!],
+                  //       begin: Alignment.topLeft,
+                  //       end: Alignment.bottomRight,
+                  //     ),
+                  //     shape: BoxShape.circle,
+                  //     boxShadow: [
+                  //       BoxShadow(
+                  //         color: Colors.green.withOpacity(0.3),
+                  //         blurRadius: 20,
+                  //         offset: const Offset(0, 10),
+                  //       ),
+                  //     ],
+                  //   ),
+                  //   child: Image.asset('images/logo.png'),
+                  // ),
 
                   // Title
                   const Text(
@@ -139,7 +135,7 @@ class _LoginScreensState extends State<LoginScreens> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Aplikasi Posyandu',
+                    'POSMAR - Posyandu Maharani',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey[600],

@@ -19,6 +19,7 @@ class ChildrenDetailsScreen extends StatefulWidget {
 
 class _ChildrenDetailsScreenState extends State<ChildrenDetailsScreen> {
   final controller = Get.put(ParentController());
+  bool isSortNewest = true; // true = terbaru, false = terlama
 
   @override
   void initState() {
@@ -26,6 +27,35 @@ class _ChildrenDetailsScreenState extends State<ChildrenDetailsScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.fetchActivity(widget.keyParent, widget.child['key']);
     });
+  }
+
+  List<dynamic> getSortedActivities() {
+    final activities = List.from(controller.activityList);
+    activities.sort((a, b) {
+      final dateA = DateTime.parse(a.createdAt);
+      final dateB = DateTime.parse(b.createdAt);
+      return isSortNewest ? dateB.compareTo(dateA) : dateA.compareTo(dateB);
+    });
+    return activities;
+  }
+
+  String getMonthYear(String dateString) {
+    final date = DateTime.parse(dateString);
+    final monthNames = [
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
+    ];
+    return '${monthNames[date.month - 1]} ${date.year}';
   }
 
   @override
@@ -139,27 +169,86 @@ class _ChildrenDetailsScreenState extends State<ChildrenDetailsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.green[100],
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(
-                          Icons.assessment,
-                          color: Colors.green[700],
-                          size: 28,
-                        ),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.green[100],
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              Icons.assessment,
+                              color: Colors.green[700],
+                              size: 28,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          const Text(
+                            'Riwayat Aktivitas',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 12),
-                      const Text(
-                        'Riwayat Aktivitas',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                        ),
-                      ),
+                      // Sort Button
+                      Obx(() {
+                        if (controller.activityList.isNotEmpty) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: Colors.green[50],
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Colors.green[200]!,
+                                width: 1,
+                              ),
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(12),
+                                onTap: () {
+                                  setState(() {
+                                    isSortNewest = !isSortNewest;
+                                  });
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        isSortNewest
+                                            ? Icons.arrow_downward
+                                            : Icons.arrow_upward,
+                                        size: 18,
+                                        color: Colors.green[700],
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        isSortNewest ? 'Terbaru' : 'Terlama',
+                                        style: TextStyle(
+                                          color: Colors.green[700],
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      }),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -236,260 +325,345 @@ class _ChildrenDetailsScreenState extends State<ChildrenDetailsScreen> {
                       );
                     }
 
+                    final sortedActivities = getSortedActivities();
+                    String? currentMonthYear;
+
                     return ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: controller.activityList.length,
+                      itemCount: sortedActivities.length,
                       itemBuilder: (BuildContext context, int index) {
-                        final activity = controller.activityList[index];
-                        return Card(
-                          elevation: 2,
-                          margin: const EdgeInsets.only(bottom: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Header with date and actions
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                        final activity = sortedActivities[index];
+                        final activityMonthYear = getMonthYear(
+                          activity.createdAt,
+                        );
+
+                        // Check if we need to show month divider
+                        bool showMonthDivider = false;
+                        if (currentMonthYear != activityMonthYear) {
+                          showMonthDivider = true;
+                          currentMonthYear = activityMonthYear;
+                        }
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Month Divider
+                            if (showMonthDivider) ...[
+                              if (index > 0) const SizedBox(height: 12),
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 10,
+                                ),
+                                margin: const EdgeInsets.only(bottom: 12),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.green[600]!,
+                                      Colors.green[400]!,
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.green.withOpacity(0.2),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
                                   children: [
+                                    const Icon(
+                                      Icons.calendar_month,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      activityMonthYear,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+
+                            // Activity Card
+                            Card(
+                              elevation: 2,
+                              margin: const EdgeInsets.only(bottom: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Header with date and actions
                                     Row(
-                                      children: [
-                                        Icon(
-                                          Icons.calendar_today,
-                                          size: 16,
-                                          color: Colors.green[700],
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          DateFormat(
-                                            'dd MMM yyyy, HH:mm',
-                                          ).format(
-                                            DateTime.parse(activity.createdAt),
-                                          ),
-                                          style: TextStyle(
-                                            color: Colors.grey[600],
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    PopupMenuButton(
-                                      icon: Icon(
-                                        Icons.more_vert,
-                                        color: Colors.grey[600],
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      itemBuilder:
-                                          (context) => [
-                                            PopupMenuItem(
-                                              child: Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.edit,
-                                                    color: Colors.green[700],
-                                                    size: 20,
-                                                  ),
-                                                  const SizedBox(width: 12),
-                                                  const Text('Edit'),
-                                                ],
-                                              ),
-                                              onTap: () {
-                                                debugPrint(
-                                                  'Activity to edit: ${activity.key}',
-                                                );
-                                                Future.delayed(
-                                                  Duration.zero,
-                                                  () => Get.to(
-                                                    () =>
-                                                        CreateActivityChildren(
-                                                          child: widget.child,
-                                                          keyParent:
-                                                              widget.keyParent,
-                                                          activity: activity,
-                                                        ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                            PopupMenuItem(
-                                              child: const Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.delete,
-                                                    color: Colors.red,
-                                                    size: 20,
-                                                  ),
-                                                  SizedBox(width: 12),
-                                                  Text('Hapus'),
-                                                ],
-                                              ),
-                                              onTap: () {
-                                                Future.delayed(
-                                                  Duration.zero,
-                                                  () => Get.defaultDialog(
-                                                    title: 'Hapus Aktivitas?',
-                                                    titleStyle: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                    middleText:
-                                                        'Apakah Anda yakin ingin menghapus aktivitas ini?',
-                                                    radius: 12,
-                                                    confirm: ElevatedButton(
-                                                      onPressed: () async {
-                                                        await controller
-                                                            .deleteActivity(
-                                                              widget.keyParent,
-                                                              widget
-                                                                  .child['key'],
-                                                              activity.key,
-                                                            );
-                                                        await controller
-                                                            .fetchActivity(
-                                                              widget.keyParent,
-                                                              widget
-                                                                  .child['key'],
-                                                            );
-                                                        Get.back();
-                                                        Get.snackbar(
-                                                          'Berhasil',
-                                                          'Aktivitas berhasil dihapus',
-                                                          backgroundColor:
-                                                              Colors.green,
-                                                          colorText:
-                                                              Colors.white,
-                                                        );
-                                                      },
-                                                      style:
-                                                          ElevatedButton.styleFrom(
-                                                            backgroundColor:
-                                                                Colors.red,
-                                                            foregroundColor:
-                                                                Colors.white,
-                                                          ),
-                                                      child: const Text(
-                                                        'Hapus',
-                                                      ),
-                                                    ),
-                                                    cancel: TextButton(
-                                                      onPressed:
-                                                          () => Get.back(),
-                                                      child: const Text(
-                                                        'Batal',
-                                                      ),
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                          ],
-                                    ),
-                                  ],
-                                ),
-                                const Divider(),
-                                const SizedBox(height: 8),
-
-                                // Measurements Grid
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: _buildMeasurementCard(
-                                        icon: Icons.accessibility_new,
-                                        label: 'Berat Badan',
-                                        value: '${activity.beratBadan} kg',
-                                        color: Colors.blue,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: _buildMeasurementCard(
-                                        icon: Icons.height,
-                                        label: 'Tinggi Badan',
-                                        value: '${activity.tinggiBadan} cm',
-                                        color: Colors.orange,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: _buildMeasurementCard(
-                                        icon: Icons.face,
-                                        label: 'Lingkar Kepala',
-                                        value: '${activity.lingkarKepala} cm',
-                                        color: Colors.purple,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: _buildMeasurementCard(
-                                        icon: Icons.back_hand,
-                                        label: 'Lingkar Lengan',
-                                        value: '${activity.lingkarLengan} cm',
-                                        color: Colors.teal,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-
-                                // Keterangan
-                                if (activity.keterangan.isNotEmpty) ...[
-                                  const SizedBox(height: 12),
-                                  Container(
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[100],
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Row(
                                           children: [
                                             Icon(
-                                              Icons.note,
+                                              Icons.calendar_today,
                                               size: 16,
-                                              color: Colors.grey[700],
+                                              color: Colors.green[700],
                                             ),
-                                            const SizedBox(width: 6),
+                                            const SizedBox(width: 8),
                                             Text(
-                                              'Keterangan:',
+                                              DateFormat(
+                                                'dd MMM yyyy, HH:mm',
+                                              ).format(
+                                                DateTime.parse(
+                                                  activity.createdAt,
+                                                ),
+                                              ),
                                               style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                color: Colors.grey[700],
-                                                fontSize: 13,
+                                                color: Colors.grey[600],
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500,
                                               ),
                                             ),
                                           ],
                                         ),
-                                        const SizedBox(height: 6),
-                                        Text(
-                                          activity.keterangan,
-                                          style: TextStyle(
-                                            color: Colors.grey[800],
-                                            fontSize: 14,
+                                        PopupMenuButton(
+                                          icon: Icon(
+                                            Icons.more_vert,
+                                            color: Colors.grey[600],
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          itemBuilder:
+                                              (context) => [
+                                                PopupMenuItem(
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.edit,
+                                                        color:
+                                                            Colors.green[700],
+                                                        size: 20,
+                                                      ),
+                                                      const SizedBox(width: 12),
+                                                      const Text('Edit'),
+                                                    ],
+                                                  ),
+                                                  onTap: () {
+                                                    debugPrint(
+                                                      'Activity to edit: ${activity.key}',
+                                                    );
+                                                    Future.delayed(
+                                                      Duration.zero,
+                                                      () => Get.to(
+                                                        () =>
+                                                            CreateActivityChildren(
+                                                              child:
+                                                                  widget.child,
+                                                              keyParent:
+                                                                  widget
+                                                                      .keyParent,
+                                                              activity:
+                                                                  activity,
+                                                            ),
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                                PopupMenuItem(
+                                                  child: const Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.delete,
+                                                        color: Colors.red,
+                                                        size: 20,
+                                                      ),
+                                                      SizedBox(width: 12),
+                                                      Text('Hapus'),
+                                                    ],
+                                                  ),
+                                                  onTap: () {
+                                                    Future.delayed(
+                                                      Duration.zero,
+                                                      () => Get.defaultDialog(
+                                                        title:
+                                                            'Hapus Aktivitas?',
+                                                        titleStyle:
+                                                            const TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                        middleText:
+                                                            'Apakah Anda yakin ingin menghapus aktivitas ini?',
+                                                        radius: 12,
+                                                        confirm: ElevatedButton(
+                                                          onPressed: () async {
+                                                            await controller
+                                                                .deleteActivity(
+                                                                  widget
+                                                                      .keyParent,
+                                                                  widget
+                                                                      .child['key'],
+                                                                  activity.key,
+                                                                );
+                                                            await controller
+                                                                .fetchActivity(
+                                                                  widget
+                                                                      .keyParent,
+                                                                  widget
+                                                                      .child['key'],
+                                                                );
+                                                            Get.back();
+                                                            Get.snackbar(
+                                                              'Berhasil',
+                                                              'Aktivitas berhasil dihapus',
+                                                              backgroundColor:
+                                                                  Colors.green,
+                                                              colorText:
+                                                                  Colors.white,
+                                                            );
+                                                          },
+                                                          style:
+                                                              ElevatedButton.styleFrom(
+                                                                backgroundColor:
+                                                                    Colors.red,
+                                                                foregroundColor:
+                                                                    Colors
+                                                                        .white,
+                                                              ),
+                                                          child: const Text(
+                                                            'Hapus',
+                                                          ),
+                                                        ),
+                                                        cancel: TextButton(
+                                                          onPressed:
+                                                              () => Get.back(),
+                                                          child: const Text(
+                                                            'Batal',
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              ],
+                                        ),
+                                      ],
+                                    ),
+                                    const Divider(),
+                                    const SizedBox(height: 8),
+
+                                    // Measurements Grid
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: _buildMeasurementCard(
+                                            icon: Icons.accessibility_new,
+                                            label: 'Berat Badan',
+                                            value: '${activity.beratBadan} kg',
+                                            color: Colors.blue,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: _buildMeasurementCard(
+                                            icon: Icons.height,
+                                            label: 'Tinggi Badan',
+                                            value: '${activity.tinggiBadan} cm',
+                                            color: Colors.orange,
                                           ),
                                         ),
                                       ],
                                     ),
-                                  ),
-                                ],
-                              ],
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: _buildMeasurementCard(
+                                            icon: Icons.face,
+                                            label: 'Lingkar Kepala',
+                                            value:
+                                                '${activity.lingkarKepala} cm',
+                                            color: Colors.purple,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: _buildMeasurementCard(
+                                            icon: Icons.back_hand,
+                                            label: 'Lingkar Lengan',
+                                            value:
+                                                '${activity.lingkarLengan} cm',
+                                            color: Colors.teal,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+
+                                    // Keterangan
+                                    if (activity.keterangan.isNotEmpty) ...[
+                                      const SizedBox(height: 12),
+                                      Container(
+                                        width: double.infinity,
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[100],
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.note,
+                                                  size: 16,
+                                                  color: Colors.grey[700],
+                                                ),
+                                                const SizedBox(width: 6),
+                                                Text(
+                                                  'Keterangan:',
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.grey[700],
+                                                    fontSize: 13,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 6),
+                                            Text(
+                                              activity.keterangan,
+                                              style: TextStyle(
+                                                color: Colors.grey[800],
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         );
                       },
                     );

@@ -47,8 +47,9 @@ class ParentController extends GetxController {
     ChildrenModel children,
     String key,
     String keyChild,
+    String keyActivity,
   ) async {
-    return await service.createActivity(children, keyChild, key);
+    return await service.createActivity(children, keyChild, key, keyActivity);
   }
 
   Future<void> fetchActivity(String key, String keyChild) async {

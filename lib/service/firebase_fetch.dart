@@ -67,10 +67,11 @@ class FirebaseFetch {
     ChildrenModel children,
     String keyChild,
     String key,
+    String keyActivity,
   ) async {
     try {
       DatabaseReference ref = FirebaseDatabase.instance.ref().child(
-        'parents/${FirebaseAuth.instance.currentUser!.uid}/$key/children/$keyChild/activity/${DateTime.fromMillisecondsSinceEpoch(DateTime.now().millisecondsSinceEpoch).toString().replaceAll('.', '').replaceAll(':', '').replaceAll('-', '')}',
+        'parents/${FirebaseAuth.instance.currentUser!.uid}/$key/children/$keyChild/activity/$keyActivity',
       );
       await ref.update(children.toJson());
       debugPrint('Data added successfully');

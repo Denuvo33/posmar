@@ -77,6 +77,13 @@ class _CreateActivityChildrenState extends State<CreateActivityChildren> {
           widget.activity!.key,
         );
       } else {
+        var key = DateTime.fromMillisecondsSinceEpoch(
+              DateTime.now().millisecondsSinceEpoch,
+            )
+            .toString()
+            .replaceAll('.', '')
+            .replaceAll(':', '')
+            .replaceAll('-', '');
         await controller.createActivity(
           ChildrenModel(
             name: widget.child['name'],
@@ -87,16 +94,11 @@ class _CreateActivityChildrenState extends State<CreateActivityChildren> {
             lingkarLengan: _lingkarLengan.text,
             keterangan: _keterangan.text,
             createdAt: DateTime.now().toString(),
-            key: DateTime.fromMillisecondsSinceEpoch(
-                  DateTime.now().millisecondsSinceEpoch,
-                )
-                .toString()
-                .replaceAll('.', '')
-                .replaceAll(':', '')
-                .replaceAll('-', ''),
+            key: key,
           ),
           widget.keyParent,
           widget.child['key'],
+          key,
         );
       }
 
