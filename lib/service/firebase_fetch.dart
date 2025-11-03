@@ -21,7 +21,6 @@ class FirebaseFetch {
           );
         }
       });
-      ;
     }
     return parentList;
   }

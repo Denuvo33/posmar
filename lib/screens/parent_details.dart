@@ -65,7 +65,7 @@ class _ParentDetailsScreenState extends State<ParentDetailsScreen> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.green.withOpacity(0.3),
+                    color: Colors.green.withValues(alpha: 0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 5),
                   ),
@@ -76,7 +76,7 @@ class _ParentDetailsScreenState extends State<ParentDetailsScreen> {
                 children: [
                   CircleAvatar(
                     radius: 50,
-                    backgroundColor: Colors.white.withOpacity(0.3),
+                    backgroundColor: Colors.white.withValues(alpha: 0.3),
                     child: const Icon(
                       Icons.person,
                       size: 60,
@@ -97,7 +97,7 @@ class _ParentDetailsScreenState extends State<ParentDetailsScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Column(

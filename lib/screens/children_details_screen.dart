@@ -104,7 +104,7 @@ class _ChildrenDetailsScreenState extends State<ChildrenDetailsScreen> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.green.withOpacity(0.3),
+                    color: Colors.green.withValues(alpha: 0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 5),
                   ),
@@ -115,7 +115,7 @@ class _ChildrenDetailsScreenState extends State<ChildrenDetailsScreen> {
                 children: [
                   CircleAvatar(
                     radius: 50,
-                    backgroundColor: Colors.white.withOpacity(0.3),
+                    backgroundColor: Colors.white.withValues(alpha: 0.3),
                     child: const Icon(
                       Icons.child_care,
                       size: 60,
@@ -139,7 +139,7 @@ class _ChildrenDetailsScreenState extends State<ChildrenDetailsScreen> {
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -369,7 +369,9 @@ class _ChildrenDetailsScreenState extends State<ChildrenDetailsScreen> {
                                   borderRadius: BorderRadius.circular(12),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.green.withOpacity(0.2),
+                                      color: Colors.green.withValues(
+                                        alpha: 0.2,
+                                      ),
                                       blurRadius: 4,
                                       offset: const Offset(0, 2),
                                     ),
@@ -687,9 +689,9 @@ class _ChildrenDetailsScreenState extends State<ChildrenDetailsScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3), width: 1),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
       ),
       child: Column(
         children: [

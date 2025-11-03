@@ -23,7 +23,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.getData();
@@ -380,6 +379,26 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         radius: 12,
                                                         confirm: ElevatedButton(
                                                           onPressed: () async {
+                                                            if (controller
+                                                                        .filteredList[index]
+                                                                        .name ==
+                                                                    null ||
+                                                                controller
+                                                                        .filteredList[index]
+                                                                        .name ==
+                                                                    '') {
+                                                              Get.back();
+                                                              Get.snackbar(
+                                                                'Gagal',
+                                                                'Data tidak valid untuk dihapus,Hubungi admin',
+                                                                backgroundColor:
+                                                                    Colors.red,
+                                                                colorText:
+                                                                    Colors
+                                                                        .white,
+                                                              );
+                                                              return;
+                                                            }
                                                             await controller
                                                                 .deleteData(
                                                                   parent.key,

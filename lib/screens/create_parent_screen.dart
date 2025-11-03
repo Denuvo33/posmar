@@ -127,7 +127,7 @@ class _CreateParentScreenState extends State<CreateParentScreen> {
                 children: [
                   CircleAvatar(
                     radius: 40,
-                    backgroundColor: Colors.white.withOpacity(0.3),
+                    backgroundColor: Colors.white.withValues(alpha: 0.3),
                     child: Icon(
                       isEdit ? Icons.edit : Icons.person_add,
                       size: 40,

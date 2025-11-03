@@ -165,7 +165,7 @@ class _CreateActivityChildrenState extends State<CreateActivityChildren> {
                 children: [
                   CircleAvatar(
                     radius: 40,
-                    backgroundColor: Colors.white.withOpacity(0.3),
+                    backgroundColor: Colors.white.withValues(alpha: 0.1),
                     child: Icon(
                       isEdit ? Icons.edit : Icons.assessment,
                       size: 40,

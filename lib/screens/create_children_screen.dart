@@ -154,7 +154,7 @@ class _CreateChildrenScreenState extends State<CreateChildrenScreen> {
                 children: [
                   CircleAvatar(
                     radius: 40,
-                    backgroundColor: Colors.white.withOpacity(0.3),
+                    backgroundColor: Colors.white.withValues(alpha: 0.3),
                     child: Icon(
                       isEdit ? Icons.edit : Icons.child_care,
                       size: 40,
