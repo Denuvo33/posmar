@@ -27,58 +27,172 @@ class _ParentDetailsScreenState extends State<ParentDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Detail Orang Tua')),
-      floatingActionButton: FloatingActionButton(
+      backgroundColor: Colors.grey[50],
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.green[700],
+        foregroundColor: Colors.white,
+        title: const Text(
+          'Detail Orang Tua',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Get.to(() => CreateChildrenScreen(keyDb: widget.parent.key));
         },
+        backgroundColor: Colors.green[700],
+        icon: const Icon(Icons.add),
+        label: const Text('Tambah Balita'),
       ),
       body: SingleChildScrollView(
-        child: Container(
-          margin: EdgeInsets.all(10),
-          // width: double.infinity,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 10,
-            children: [
-              Card(
-                child: Container(
-                  margin: EdgeInsets.all(6),
-                  child: Column(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header Section with Parent Info
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.green[700]!, Colors.green[500]!],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(30),
+                  bottomRight: Radius.circular(30),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.green.withOpacity(0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundColor: Colors.white.withOpacity(0.3),
+                    child: const Icon(
+                      Icons.person,
+                      size: 60,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    widget.parent.name,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      children: [
+                        _buildInfoRow(
+                          icon: Icons.location_on,
+                          text: widget.parent.addres,
+                        ),
+                        const SizedBox(height: 12),
+                        _buildInfoRow(
+                          icon: Icons.phone,
+                          text: widget.parent.phone,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Children Section
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
-                      ListTile(
-                        title: Text(widget.parent.name),
-                        leading: Icon(Icons.person),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.green[100],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.child_care,
+                          color: Colors.green[700],
+                          size: 28,
+                        ),
                       ),
-                      ListTile(
-                        title: Text(widget.parent.addres),
-                        leading: Icon(Icons.location_city),
-                      ),
-                      ListTile(
-                        title: Text(widget.parent.phone),
-                        leading: Icon(Icons.phone),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'Daftar Balita',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                        ),
                       ),
                     ],
                   ),
-                ),
-              ),
-
-              Text(
-                'Balita',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-              ),
-              Divider(),
-              Obx(
-                () =>
-                    controller.isLoading.value
-                        ? Center(child: CircularProgressIndicator())
-                        : controller.childrenList.isEmpty
-                        ? Center(
+                  const SizedBox(height: 16),
+                  Obx(() {
+                    if (controller.isLoading.value) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(40),
                           child: Column(
-                            spacing: 10,
                             children: [
-                              Text('Tidak ada data'),
-                              ElevatedButton(
+                              CircularProgressIndicator(
+                                color: Colors.green[700],
+                              ),
+                              const SizedBox(height: 16),
+                              const Text('Memuat data balita...'),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+
+                    if (controller.childrenList.isEmpty) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(40),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.inbox_outlined,
+                                size: 80,
+                                color: Colors.grey[400],
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Belum ada data balita',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Tambahkan balita untuk memulai',
+                                style: TextStyle(color: Colors.grey[500]),
+                              ),
+                              const SizedBox(height: 24),
+                              ElevatedButton.icon(
                                 onPressed: () {
                                   Get.to(
                                     () => CreateChildrenScreen(
@@ -86,113 +200,226 @@ class _ParentDetailsScreenState extends State<ParentDetailsScreen> {
                                     ),
                                   );
                                 },
-                                child: Text('Tambah Balita'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green[700],
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 16,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                icon: const Icon(Icons.add),
+                                label: const Text('Tambah Balita'),
                               ),
                             ],
                           ),
-                        )
-                        : ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: controller.childrenList.length,
-                          itemBuilder: (context, index) {
-                            return InkWell(
-                              onTap:
-                                  () => Get.to(
-                                    () => ChildrenDetailsScreen(
-                                      child: {
-                                        'name':
-                                            controller.childrenList[index].name,
-                                        'dateBorn':
-                                            controller
-                                                .childrenList[index]
-                                                .dateBorn,
-                                        'key':
-                                            controller.childrenList[index].key,
-                                      },
-                                      keyParent: widget.parent.key,
+                        ),
+                      );
+                    }
+
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: controller.childrenList.length,
+                      itemBuilder: (context, index) {
+                        final child = controller.childrenList[index];
+                        return Card(
+                          elevation: 2,
+                          margin: const EdgeInsets.only(bottom: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: InkWell(
+                            onTap:
+                                () => Get.to(
+                                  () => ChildrenDetailsScreen(
+                                    child: {
+                                      'name': child.name,
+                                      'dateBorn': child.dateBorn,
+                                      'key': child.key,
+                                    },
+                                    keyParent: widget.parent.key,
+                                  ),
+                                ),
+                            borderRadius: BorderRadius.circular(16),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    backgroundColor: Colors.green[100],
+                                    radius: 25,
+                                    child: Icon(
+                                      Icons.child_care,
+                                      color: Colors.green[700],
                                     ),
                                   ),
-                              child: Card(
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        IconButton(
-                                          onPressed: () {
-                                            Get.to(
-                                              () => CreateChildrenScreen(
-                                                keyDb: widget.parent.key,
-                                                child: {
-                                                  'name':
-                                                      controller
-                                                          .childrenList[index]
-                                                          .name,
-                                                  'dateBorn':
-                                                      controller
-                                                          .childrenList[index]
-                                                          .dateBorn,
-                                                  'key':
-                                                      controller
-                                                          .childrenList[index]
-                                                          .key,
-                                                },
-                                              ),
-                                            );
-                                          },
-                                          icon: Icon(Icons.edit),
-                                        ),
-                                        IconButton(
-                                          onPressed: () {
-                                            Get.defaultDialog(
-                                              title: 'Hapus Balita?',
-                                              middleText:
-                                                  'Apakah anda yakin ingin menghapus balita ini?',
-                                              onConfirm: () async {
-                                                controller.deleteChildren(
-                                                  widget.parent.key,
-                                                  controller
-                                                      .childrenList[index]
-                                                      .key,
-                                                );
-                                                controller.fetchChildren(
-                                                  widget.parent.key,
-                                                );
-                                                Get.back();
-                                                Get.snackbar(
-                                                  'Success',
-                                                  'Balita berhasil dihapus',
-                                                );
-                                              },
-                                              onCancel: () {},
-                                            );
-                                          },
-                                          icon: Icon(Icons.delete),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Icon(Icons.child_care),
-                                        SizedBox(width: 8),
                                         Text(
-                                          '${controller.childrenList[index].name}',
+                                          child.name,
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.cake,
+                                              size: 16,
+                                              color: Colors.grey[600],
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              child.dateBorn,
+                                              style: TextStyle(
+                                                color: Colors.grey[600],
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  PopupMenuButton(
+                                    icon: Icon(
+                                      Icons.more_vert,
+                                      color: Colors.grey[600],
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    itemBuilder:
+                                        (context) => [
+                                          PopupMenuItem(
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.edit,
+                                                  color: Colors.green[700],
+                                                  size: 20,
+                                                ),
+                                                const SizedBox(width: 12),
+                                                const Text('Edit'),
+                                              ],
+                                            ),
+                                            onTap: () {
+                                              Future.delayed(
+                                                Duration.zero,
+                                                () => Get.to(
+                                                  () => CreateChildrenScreen(
+                                                    keyDb: widget.parent.key,
+                                                    child: {
+                                                      'name': child.name,
+                                                      'dateBorn':
+                                                          child.dateBorn,
+                                                      'key': child.key,
+                                                    },
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                          PopupMenuItem(
+                                            child: const Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.delete,
+                                                  color: Colors.red,
+                                                  size: 20,
+                                                ),
+                                                SizedBox(width: 12),
+                                                Text('Hapus'),
+                                              ],
+                                            ),
+                                            onTap: () {
+                                              Future.delayed(
+                                                Duration.zero,
+                                                () => Get.defaultDialog(
+                                                  title: 'Hapus Balita?',
+                                                  titleStyle: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                  middleText:
+                                                      'Apakah Anda yakin ingin menghapus balita ini?',
+                                                  radius: 12,
+                                                  confirm: ElevatedButton(
+                                                    onPressed: () async {
+                                                      await controller
+                                                          .deleteChildren(
+                                                            widget.parent.key,
+                                                            child.key,
+                                                          );
+                                                      controller.fetchChildren(
+                                                        widget.parent.key,
+                                                      );
+                                                      Get.back();
+                                                      Get.snackbar(
+                                                        'Berhasil',
+                                                        'Balita berhasil dihapus',
+                                                        backgroundColor:
+                                                            Colors.green,
+                                                        colorText: Colors.white,
+                                                      );
+                                                    },
+                                                    style:
+                                                        ElevatedButton.styleFrom(
+                                                          backgroundColor:
+                                                              Colors.red,
+                                                          foregroundColor:
+                                                              Colors.white,
+                                                        ),
+                                                    child: const Text('Hapus'),
+                                                  ),
+                                                  cancel: TextButton(
+                                                    onPressed: () => Get.back(),
+                                                    child: const Text('Batal'),
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                  ),
+                                ],
                               ),
-                            );
-                          },
-                        ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
+    );
+  }
+
+  Widget _buildInfoRow({required IconData icon, required String text}) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.white, size: 20),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(color: Colors.white, fontSize: 15),
+          ),
+        ),
+      ],
     );
   }
 }
