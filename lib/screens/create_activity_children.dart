@@ -7,8 +7,10 @@ import 'package:posmar/model/children_model.dart';
 class CreateActivityChildren extends StatefulWidget {
   final Map<String, dynamic> child;
   final String keyParent;
+  final ChildrenModel? activity;
   const CreateActivityChildren({
     super.key,
+    this.activity,
     required this.child,
     required this.keyParent,
   });
@@ -39,9 +41,28 @@ class _CreateActivityChildrenState extends State<CreateActivityChildren> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if (widget.activity != null) {
+      _lingkarKepala.text = widget.activity!.lingkarKepala.toString();
+      _beratBadan.text = widget.activity!.beratBadan.toString();
+      _tinggiBadan.text = widget.activity!.tinggiBadan.toString();
+      _lingkarLengan.text = widget.activity!.lingkarLengan.toString();
+      _keterangan.text = widget.activity!.keterangan.toString();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Tambah Aktivitas Balita')),
+      appBar: AppBar(
+        title: Text(
+          widget.activity != null
+              ? 'Edit Aktivitas Balita'
+              : 'Tambah Aktivitas Balita',
+        ),
+      ),
       body: SingleChildScrollView(
         child: Container(
           margin: EdgeInsets.all(10),
@@ -108,24 +129,47 @@ class _CreateActivityChildrenState extends State<CreateActivityChildren> {
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      await controller.createActivity(
-                        ChildrenModel(
-                          name: widget.child['name'],
-                          dateBorn: widget.child['dateBorn'],
-                          lingkarKepala: _lingkarKepala.text,
-                          beratBadan: _beratBadan.text,
-                          tinggiBadan: _tinggiBadan.text,
-                          lingkarLengan: _lingkarLengan.text,
-                          keterangan: _keterangan.text,
-                          createdAt: DateTime.now().toString(),
-                          key:
-                              DateTime.fromMillisecondsSinceEpoch(
-                                DateTime.now().millisecondsSinceEpoch,
-                              ).toString(),
-                        ),
-                        widget.keyParent,
-                        widget.child['key'],
-                      );
+                      if (widget.activity != null) {
+                        await controller.updateActivity(
+                          ChildrenModel(
+                            name: widget.child['name'],
+                            dateBorn: widget.child['dateBorn'],
+                            lingkarKepala: _lingkarKepala.text,
+                            beratBadan: _beratBadan.text,
+                            tinggiBadan: _tinggiBadan.text,
+                            lingkarLengan: _lingkarLengan.text,
+                            keterangan: _keterangan.text,
+                            createdAt: widget.activity!.createdAt,
+                            key: widget.activity!.key,
+                          ),
+                          widget.keyParent,
+                          widget.child['key'],
+                          widget.activity!.key,
+                        );
+                      } else {
+                        await controller.createActivity(
+                          ChildrenModel(
+                            name: widget.child['name'],
+                            dateBorn: widget.child['dateBorn'],
+                            lingkarKepala: _lingkarKepala.text,
+                            beratBadan: _beratBadan.text,
+                            tinggiBadan: _tinggiBadan.text,
+                            lingkarLengan: _lingkarLengan.text,
+                            keterangan: _keterangan.text,
+                            createdAt: DateTime.now().toString(),
+                            key: DateTime.fromMillisecondsSinceEpoch(
+                                  DateTime.now().millisecondsSinceEpoch,
+                                )
+                                .toString()
+                                .replaceAll('.', '')
+                                .replaceAll(':', '')
+                                .replaceAll('-', ''),
+                          ),
+                          widget.keyParent,
+                          widget.child['key'],
+                        );
+                      }
+
                       await controller.fetchActivity(
                         widget.keyParent,
                         widget.child['key'],

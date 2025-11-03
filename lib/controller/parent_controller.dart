@@ -59,6 +59,23 @@ class ParentController extends GetxController {
     });
   }
 
+  Future<void> updateActivity(
+    ChildrenModel children,
+    String key,
+    String keyChild,
+    String keyActivity,
+  ) async {
+    await service.updateActivity(children, key, keyChild, keyActivity);
+  }
+
+  Future<void> deleteActivity(
+    String key,
+    String keyChild,
+    String keyActivity,
+  ) async {
+    await service.deleteActivity(key, keyChild, keyActivity);
+  }
+
   //Create Parent
   Future<void> createData(ParentModel parent, String key) async {
     await service.addParent(parent, key);

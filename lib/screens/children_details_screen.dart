@@ -81,7 +81,55 @@ class _ChildrenDetailsScreenState extends State<ChildrenDetailsScreen> {
                           itemBuilder: (BuildContext context, int index) {
                             return Card(
                               child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {
+                                          Get.to(
+                                            () => CreateActivityChildren(
+                                              child: widget.child,
+                                              keyParent: widget.keyParent,
+                                              activity:
+                                                  controller
+                                                      .activityList[index],
+                                            ),
+                                          );
+                                        },
+                                        icon: Icon(Icons.edit),
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          Get.defaultDialog(
+                                            title:
+                                                'Apakah anda yakin ingin menghapus aktivitas ini?',
+                                            middleText:
+                                                'Anda akan menghapus aktivitas ini',
+                                            onConfirm: () async {
+                                              await controller.deleteActivity(
+                                                widget.keyParent,
+                                                widget.child['key'],
+                                                controller
+                                                    .activityList[index]
+                                                    .key,
+                                              );
+                                              await controller.fetchActivity(
+                                                widget.keyParent,
+                                                widget.child['key'],
+                                              );
+                                              Get.back();
+                                            },
+
+                                            onCancel: () {},
+                                          );
+                                        },
+                                        icon: Icon(Icons.delete),
+                                      ),
+                                    ],
+                                  ),
                                   Text(controller.activityList[index].name),
                                   Text(
                                     DateFormat('dd/MMMM/yyyy HH:mm').format(

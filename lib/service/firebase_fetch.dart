@@ -106,6 +106,36 @@ class FirebaseFetch {
     }
   }
 
+  Future<void> updateActivity(
+    ChildrenModel children,
+    String keyParent,
+    String keyChildren,
+    String key,
+  ) async {
+    try {
+      DatabaseReference db = FirebaseDatabase.instance.ref(
+        'parents/${FirebaseAuth.instance.currentUser!.uid}/$keyParent/children/$keyChildren/activity/$key',
+      );
+      await db.update(children.toJson());
+    } catch (e) {
+      debugPrint('Error $e');
+    }
+  }
+
+  Future<void> deleteActivity(keyParent, keyChildren, key) async {
+    try {
+      debugPrint(
+        'db path is parents/${FirebaseAuth.instance.currentUser!.uid}/$keyParent/children/$keyChildren/activity/$key',
+      );
+      DatabaseReference db = FirebaseDatabase.instance.ref(
+        'parents/${FirebaseAuth.instance.currentUser!.uid}/$keyParent/children/$keyChildren/activity/$key',
+      );
+      await db.remove();
+    } catch (e) {
+      debugPrint('Error $e');
+    }
+  }
+
   //Children
 
   Future<List<ChildrenModel>> fetchChildren(key) async {
