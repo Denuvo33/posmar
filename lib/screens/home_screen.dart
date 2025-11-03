@@ -1,21 +1,37 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/instance_manager.dart';
 import 'package:posmar/controller/auth_controller.dart';
 import 'package:posmar/controller/parent_controller.dart';
+import 'package:posmar/screens/about_screen.dart';
 import 'package:posmar/screens/create_parent_screen.dart';
 import 'package:posmar/screens/login_screens.dart';
 import 'package:posmar/screens/parent_details.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final controller = Get.put(ParentController());
-    final auth = Get.find<AuthController>();
+  State<HomeScreen> createState() => _HomeScreenState();
+}
 
+class _HomeScreenState extends State<HomeScreen> {
+  final controller = Get.put(ParentController());
+  final auth = Get.find<AuthController>();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.getData();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -23,7 +39,7 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: Colors.green[700],
         foregroundColor: Colors.white,
         title: const Text(
-          'Posyandu',
+          'Posmar',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
@@ -34,61 +50,39 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
       drawer: Drawer(
-        child: Column(
+        child: ListView(
+          padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.green[700]!, Colors.green[500]!],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+            UserAccountsDrawerHeader(
+              decoration: BoxDecoration(color: Colors.green[700]),
+              accountName: Text(''),
+              accountEmail: Text(
+                FirebaseAuth.instance.currentUser!.email!.toString(),
+              ),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Text(
+                  FirebaseAuth.instance.currentUser!.email![0].toUpperCase(),
+                  style: TextStyle(color: Colors.black, fontSize: 30),
                 ),
               ),
-              child: const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.health_and_safety,
-                      size: 50,
-                      color: Colors.green,
-                    ),
-                  ),
-                  SizedBox(height: 12),
-                  Text(
-                    'Aplikasi Posyandu',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
             ),
             ListTile(
-              leading: const Icon(Icons.home, color: Colors.green),
-              title: const Text('Beranda'),
-              onTap: () => Navigator.pop(context),
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings, color: Colors.green),
-              title: const Text('Pengaturan'),
-              onTap: () {},
-            ),
-            const Spacer(),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.logout, color: Colors.red),
-              title: const Text('Keluar'),
+              title: Text('Tentang'),
+              leading: Icon(Icons.info),
               onTap: () {
-                auth.logout();
-                Get.offAll(() => LoginScreens());
+                Get.back();
+                Get.to(() => const AboutScreen());
               },
             ),
-            const SizedBox(height: 16),
+            ListTile(
+              title: Text('Keluar'),
+              leading: Icon(Icons.logout),
+              onTap: () {
+                Get.offAll(() => LoginScreens());
+                auth.logout();
+              },
+            ),
           ],
         ),
       ),
@@ -100,6 +94,7 @@ class HomeScreen extends StatelessWidget {
           );
         },
         backgroundColor: Colors.green[700],
+        foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
         label: const Text('Tambah'),
       ),
@@ -150,7 +145,7 @@ class HomeScreen extends StatelessWidget {
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
@@ -182,9 +177,11 @@ class HomeScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(16),
               child: TextField(
+                onChanged: (value) => controller.setSearch(value),
                 decoration: InputDecoration(
                   hintText: 'Cari orang tua...',
                   prefixIcon: Icon(Icons.search, color: Colors.green[700]),
+
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -259,9 +256,9 @@ class HomeScreen extends StatelessWidget {
                       )
                       : ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        itemCount: controller.parentList.length,
+                        itemCount: controller.filteredList.length,
                         itemBuilder: (BuildContext context, int index) {
-                          final parent = controller.parentList[index];
+                          final parent = controller.filteredList[index];
                           return Card(
                             elevation: 2,
                             margin: const EdgeInsets.only(bottom: 12),
@@ -269,10 +266,14 @@ class HomeScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: InkWell(
-                              onTap:
-                                  () => Get.to(
-                                    () => ParentDetailsScreen(parent: parent),
-                                  ),
+                              onTap: () {
+                                Get.to(
+                                  () => ParentDetailsScreen(parent: parent),
+                                );
+                                controller.filteredList.value =
+                                    controller.parentList;
+                              },
+
                               borderRadius: BorderRadius.circular(16),
                               child: Padding(
                                 padding: const EdgeInsets.all(16),

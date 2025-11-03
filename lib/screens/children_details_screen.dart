@@ -81,6 +81,7 @@ class _ChildrenDetailsScreenState extends State<ChildrenDetailsScreen> {
           );
         },
         backgroundColor: Colors.green[700],
+        foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
         label: const Text('Tambah Aktivitas'),
       ),

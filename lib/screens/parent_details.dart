@@ -42,6 +42,7 @@ class _ParentDetailsScreenState extends State<ParentDetailsScreen> {
           Get.to(() => CreateChildrenScreen(keyDb: widget.parent.key));
         },
         backgroundColor: Colors.green[700],
+        foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
         label: const Text('Tambah Balita'),
       ),

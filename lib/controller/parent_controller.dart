@@ -9,6 +9,8 @@ class ParentController extends GetxController {
   var activityList = <ChildrenModel>[].obs;
   var isLoading = true.obs;
   final service = FirebaseFetch();
+  var searchQuery = ''.obs;
+  var filteredList = <ParentModel>[].obs;
   @override
   void onInit() {
     super.onInit();
@@ -19,8 +21,24 @@ class ParentController extends GetxController {
     isLoading(true);
     service.fetchParent().then((value) {
       parentList.value = value;
+      filteredList.value = value;
       isLoading(false);
     });
+  }
+
+  void setSearch(String query) {
+    searchQuery.value = query;
+    if (query.isEmpty) {
+      filteredList.value = parentList;
+    } else {
+      filteredList.value =
+          parentList
+              .where(
+                (parent) =>
+                    parent.name.toLowerCase().contains(query.toLowerCase()),
+              )
+              .toList();
+    }
   }
 
   void fetchChildren(String key) {

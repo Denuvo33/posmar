@@ -277,7 +277,7 @@ class _LoginScreensState extends State<LoginScreens> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         elevation: 3,
-                        shadowColor: Colors.green.withOpacity(0.5),
+                        shadowColor: Colors.green.withValues(alpha: 0.5),
                       ),
                       child:
                           _isLoading
@@ -302,22 +302,6 @@ class _LoginScreensState extends State<LoginScreens> {
                   ),
 
                   const SizedBox(height: 20),
-
-                  // Forgot Password
-                  TextButton(
-                    onPressed: () {
-                      // TODO: Implement forgot password
-                    },
-                    child: Text(
-                      'Lupa Password?',
-                      style: TextStyle(
-                        color: Colors.green[700],
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 30),
 
                   // Footer
                   Text(
