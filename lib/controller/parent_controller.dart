@@ -35,6 +35,14 @@ class ParentController extends GetxController {
     await service.addChildren(children, key, children['key']);
   }
 
+  Future<void> updateChildren(Map<String, dynamic> children, String key) async {
+    await service.updateChildren(children, key);
+  }
+
+  Future<void> deleteChildren(String key, String keyChild) async {
+    await service.deleteChildren(key, keyChild);
+  }
+
   Future<void> createActivity(
     ChildrenModel children,
     String key,

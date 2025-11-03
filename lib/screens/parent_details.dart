@@ -96,9 +96,7 @@ class _ParentDetailsScreenState extends State<ParentDetailsScreen> {
                           physics: NeverScrollableScrollPhysics(),
                           itemCount: controller.childrenList.length,
                           itemBuilder: (context, index) {
-                            return ListTile(
-                              title: Text(controller.childrenList[index].name),
-                              leading: Icon(Icons.person),
+                            return InkWell(
                               onTap:
                                   () => Get.to(
                                     () => ChildrenDetailsScreen(
@@ -115,6 +113,78 @@ class _ParentDetailsScreenState extends State<ParentDetailsScreen> {
                                       keyParent: widget.parent.key,
                                     ),
                                   ),
+                              child: Card(
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        IconButton(
+                                          onPressed: () {
+                                            Get.to(
+                                              () => CreateChildrenScreen(
+                                                keyDb: widget.parent.key,
+                                                child: {
+                                                  'name':
+                                                      controller
+                                                          .childrenList[index]
+                                                          .name,
+                                                  'dateBorn':
+                                                      controller
+                                                          .childrenList[index]
+                                                          .dateBorn,
+                                                  'key':
+                                                      controller
+                                                          .childrenList[index]
+                                                          .key,
+                                                },
+                                              ),
+                                            );
+                                          },
+                                          icon: Icon(Icons.edit),
+                                        ),
+                                        IconButton(
+                                          onPressed: () {
+                                            Get.defaultDialog(
+                                              title: 'Hapus Balita?',
+                                              middleText:
+                                                  'Apakah anda yakin ingin menghapus balita ini?',
+                                              onConfirm: () async {
+                                                controller.deleteChildren(
+                                                  widget.parent.key,
+                                                  controller
+                                                      .childrenList[index]
+                                                      .key,
+                                                );
+                                                controller.fetchChildren(
+                                                  widget.parent.key,
+                                                );
+                                                Get.back();
+                                                Get.snackbar(
+                                                  'Success',
+                                                  'Balita berhasil dihapus',
+                                                );
+                                              },
+                                              onCancel: () {},
+                                            );
+                                          },
+                                          icon: Icon(Icons.delete),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Icon(Icons.child_care),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          '${controller.childrenList[index].name}',
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
                             );
                           },
                         ),

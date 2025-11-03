@@ -153,4 +153,27 @@ class FirebaseFetch {
       debugPrint('Error: $e');
     }
   }
+
+  Future<void> updateChildren(Map<String, dynamic> children, String key) async {
+    try {
+      DatabaseReference ref = FirebaseDatabase.instance.ref().child(
+        'parents/${FirebaseAuth.instance.currentUser!.uid}/$key/children/${children['key']}',
+      );
+      await ref.update(children);
+      debugPrint('Data updated successfully');
+    } catch (e) {
+      debugPrint('Error: $e');
+    }
+  }
+
+  Future<void> deleteChildren(key, keyChild) async {
+    try {
+      DatabaseReference db = FirebaseDatabase.instance.ref(
+        'parents/${FirebaseAuth.instance.currentUser!.uid}/$key/children/$keyChild',
+      );
+      await db.remove();
+    } catch (e) {
+      debugPrint('Error $e');
+    }
+  }
 }

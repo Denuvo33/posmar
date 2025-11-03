@@ -5,7 +5,8 @@ import 'package:posmar/controller/parent_controller.dart';
 
 class CreateChildrenScreen extends StatefulWidget {
   final String keyDb;
-  const CreateChildrenScreen({super.key, required this.keyDb});
+  final Map<String, dynamic>? child;
+  const CreateChildrenScreen({super.key, required this.keyDb, this.child});
 
   @override
   State<CreateChildrenScreen> createState() => _CreateChildrenScreenState();
@@ -22,6 +23,11 @@ class _CreateChildrenScreenState extends State<CreateChildrenScreen> {
   void initState() {
     super.initState();
     _dateBornController.text = DateFormat('dd/MM/yyyy').format(_selectedDate);
+    if (widget.child != null) {
+      _nameController.text = widget.child!['name'];
+      _dateBornController.text = widget.child!['dateBorn'];
+      _selectedDate = DateTime.parse(widget.child!['dateBorn']);
+    }
   }
 
   @override
@@ -50,7 +56,9 @@ class _CreateChildrenScreenState extends State<CreateChildrenScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Tambah Balita')),
+      appBar: AppBar(
+        title: Text(widget.child != null ? 'Edit Balita' : 'Tambah Balita'),
+      ),
       body: SingleChildScrollView(
         child: Container(
           margin: EdgeInsets.all(10),
@@ -85,11 +93,19 @@ class _CreateChildrenScreenState extends State<CreateChildrenScreen> {
                           .replaceAll('-', '')
                           .replaceAll(':', '')
                           .replaceAll('.', '');
-                      await controller.createChildren({
-                        'name': _nameController.text,
-                        'dateBorn': _selectedDate.toString(),
-                        'key': key,
-                      }, widget.keyDb);
+                      if (widget.child != null) {
+                        await controller.updateChildren({
+                          'name': _nameController.text,
+                          'dateBorn': _selectedDate.toString(),
+                          'key': widget.child!['key'],
+                        }, widget.keyDb);
+                      } else {
+                        await controller.createChildren({
+                          'name': _nameController.text,
+                          'dateBorn': _selectedDate.toString(),
+                          'key': key,
+                        }, widget.keyDb);
+                      }
                     }
                     controller.fetchChildren(widget.keyDb);
                     Get.back();
