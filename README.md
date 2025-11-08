@@ -1,4 +1,5 @@
-# 🏥 Aplikasi Posyandu Maharani
+# Aplikasi Posyandu Maharani
+
 
 Aplikasi mobile untuk mengelola data kesehatan balita di Posyandu menggunakan Flutter, Firebase Realtime Database, dan GetX untuk state management.
 
@@ -8,40 +9,47 @@ Aplikasi mobile untuk mengelola data kesehatan balita di Posyandu menggunakan Fl
 
 ---
 
-## ✨ Fitur Utama
+<!-- <img width="500" height="500" alt="1000097354-removebg-preview" src="https://github.com/user-attachments/assets/a7371952-f971-40f7-8e70-63b1b2b4e289" /> -->
+<img width="264" height="244" alt="logo uncut" src="https://github.com/user-attachments/assets/215bda85-ede9-46c5-bfde-5eb1a9ba7465" />
 
-### 🔐 Authentication
+##  Fitur Utama
+
+###  Authentication
 - Login dengan email & password (Firebase Auth)
 - Session management dengan GetX
 - Auto-check authentication state
 - Secure logout
+<img width="300" height="700" alt="Screenshot_1762580190" src="https://github.com/user-attachments/assets/e8f749a9-83ba-491a-9439-50e254d6ceca" />
 
-### 👨‍👩‍👧 Manajemen Orang Tua
-- ✅ Tambah data orang tua (nama, alamat, no HP)
-- ✅ Edit data orang tua
-- ✅ Hapus data orang tua
-- ✅ Real-time synchronization
-- 🔍 **Search** berdasarkan nama, alamat, atau nomor HP
+### Manajemen Orang Tua
+- Tambah data orang tua (nama, alamat, no HP)
+- Edit data orang tua
+- Hapus data orang tua
+- Real-time synchronization
+- **Search** berdasarkan nama, alamat, atau nomor HP
 
-### 👶 Manajemen Data Balita
-- ✅ Tambah anak baru dengan aktivitas pertama
-- ✅ Tambah aktivitas untuk anak yang sudah ada
-- ✅ Data tersimpan nested di dalam orang tua
-- ✅ Real-time updates di semua screen
-- 📊 **Sorting** berdasarkan:
+### Manajemen Data Balita
+- Tambah anak baru dengan aktivitas pertama
+- Tambah aktivitas untuk anak yang sudah ada
+- Data tersimpan nested di dalam orang tua
+- Real-time updates di semua screen
+- **Sorting** berdasarkan:
   - Nama anak (A-Z)
   - Tanggal aktivitas terakhir (Terbaru/Terlama)
 
-### 📊 Data Pengukuran Balita
-Setiap aktivitas mencatat:
-- 📅 Tanggal pengukuran
-- 🧠 Lingkar kepala (cm)
-- 💪 Lingkar lengan (cm)
-- 📏 Tinggi badan (cm)
-- ⚖️ Berat badan (kg)
-- 📝 Keterangan/catatan
+<img width="300" height="700" alt="Screenshot_1762580689" src="https://github.com/user-attachments/assets/8fc9c12f-fc67-4987-ac62-bd3466faac6b" />
 
-### 🎨 UI/UX Features
+
+### Data Pengukuran Balita
+Setiap aktivitas mencatat:
+- Tanggal pengukuran
+- Lingkar kepala (cm)
+- Lingkar lengan (cm)
+- Tinggi badan (cm)
+- Berat badan (kg)
+- Keterangan/catatan
+
+### UI/UX Features
 - Material Design 3
 - Responsive design
 - Loading indicators
@@ -51,7 +59,7 @@ Setiap aktivitas mencatat:
 
 ---
 
-## 🗄️ Struktur Database
+## Struktur Database
 
 Database menggunakan **Firebase Realtime Database** dengan struktur nested:
 
@@ -62,17 +70,21 @@ Database menggunakan **Firebase Realtime Database** dengan struktur nested:
       "name": "Ibu Sarah",
       "address": "Jl. Mawar No. 10, Jakarta Selatan",
       "phoneNumber": "081234567890",
+      "key": "-NxYz123abc",
       "children": {
         "-NxYz456def": {
           "name": "Ahmad",
           "activities": {
             "-NxYz789ghi": {
-              "date": "2025-01-15T00:00:00.000Z",
-              "headCircumference": 45.5,
-              "armCircumference": 14.2,
-              "height": 85.5,
-              "weight": 12.3,
-              "notes": "Anak dalam kondisi sehat"
+              "created_At": "2025-01-15T00:00:00.000Z",
+              "dateBorn": "2024-01-01"
+              "lingkarKepala": 45.5,
+              "lingkarLengan": 14.2,
+              "name": "Ahmad",
+              "tinggiBadan": 85.5,
+              "key": "-NxYz789ghi",
+              "beratBadan": 12.3,
+              "keterangan": "Anak dalam kondisi sehat"
             }
           }
         }
@@ -87,8 +99,8 @@ Database menggunakan **Firebase Realtime Database** dengan struktur nested:
 ## 🚀 Instalasi
 
 ### Prerequisites
-- Flutter SDK 3.0 atau lebih baru
-- Dart SDK 3.0+
+- Flutter SDK 3.29.3 atau lebih baru
+- Dart SDK 3.7.2+
 - Android Studio / VS Code
 - Firebase Account
 
@@ -110,11 +122,11 @@ flutter pub get
 flutter run
 ```
 
-## 📖 Cara Menggunakan
+## Cara Menggunakan
 
 ### 1. Login
-- Email: `admin@posyandu.com`
-- Password: `admin123`
+- Email: `-`
+- Password: `-`
 
 ### 2. Tambah Orang Tua
 1. Klik tombol **"+ Tambah Orang Tua"**
@@ -124,9 +136,8 @@ flutter run
 ### 3. Tambah Aktivitas Balita
 1. Klik nama orang tua
 2. Klik **"+ Tambah Aktivitas"**
-3. Pilih **"Anak Baru"** atau **"Anak Existing"**
-4. Isi data pengukuran
-5. Klik **SIMPAN**
+3. Isi data anak
+4. Klik **SIMPAN**
 
 ### 4. Lihat Riwayat
 1. Klik nama orang tua
@@ -134,7 +145,7 @@ flutter run
 3. Lihat semua riwayat aktivitas
 
 ### 5. Search & Sort
-- **Search**: Ketik di search bar (nama, alamat, HP)
+- **Search**: Ketik di search bar nama
 - **Sort**: Klik ikon sort untuk mengubah urutan
 
 ---
