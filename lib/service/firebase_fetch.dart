@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
 import 'package:posmar/model/children_model.dart';
 import 'package:posmar/model/parent_model.dart';
 
@@ -31,9 +31,8 @@ class FirebaseFetch {
         'parents/${FirebaseAuth.instance.currentUser!.uid}/$key',
       );
       await ref.update(parent.toJson());
-      debugPrint('Data added successfully');
     } catch (e) {
-      debugPrint('Error: $e');
+      Get.snackbar('Error', e.toString());
     }
   }
 
@@ -43,9 +42,8 @@ class FirebaseFetch {
         'parents/${FirebaseAuth.instance.currentUser!.uid}/$key',
       );
       await ref.update(parent.toJson());
-      debugPrint('Data updated successfully');
     } catch (e) {
-      debugPrint('Error: $e');
+      Get.snackbar('Error', e.toString());
     }
   }
 
@@ -56,7 +54,7 @@ class FirebaseFetch {
       );
       await db.child(key).remove();
     } catch (e) {
-      debugPrint('Error $e');
+      Get.snackbar('Error', e.toString());
     }
   }
 
@@ -73,9 +71,8 @@ class FirebaseFetch {
         'parents/${FirebaseAuth.instance.currentUser!.uid}/$key/children/$keyChild/activity/$keyActivity',
       );
       await ref.update(children.toJson());
-      debugPrint('Data added successfully');
     } catch (e) {
-      debugPrint('Error: $e');
+      Get.snackbar('Error', e.toString());
     }
   }
 
@@ -101,7 +98,7 @@ class FirebaseFetch {
       }
       return activityList;
     } catch (e) {
-      debugPrint('Error: $e');
+      Get.snackbar('Error', e.toString());
       return [];
     }
   }
@@ -118,21 +115,18 @@ class FirebaseFetch {
       );
       await db.update(children.toJson());
     } catch (e) {
-      debugPrint('Error $e');
+      Get.snackbar('Error', e.toString());
     }
   }
 
   Future<void> deleteActivity(keyParent, keyChildren, key) async {
     try {
-      debugPrint(
-        'db path is parents/${FirebaseAuth.instance.currentUser!.uid}/$keyParent/children/$keyChildren/activity/$key',
-      );
       DatabaseReference db = FirebaseDatabase.instance.ref(
         'parents/${FirebaseAuth.instance.currentUser!.uid}/$keyParent/children/$keyChildren/activity/$key',
       );
       await db.remove();
     } catch (e) {
-      debugPrint('Error $e');
+      Get.snackbar('Error', e.toString());
     }
   }
 
@@ -155,14 +149,13 @@ class FirebaseFetch {
             childrenList.add(
               ChildrenModel.fromJson(Map<String, dynamic>.from(value)),
             );
-            debugPrint('Children data: ${value.toString()}');
           }
         });
       } else {
-        debugPrint('No data available.');
+        Get.snackbar('Error', 'Tidak ada data.');
       }
     } catch (error) {
-      debugPrint('Error fetching children data: $error');
+      Get.snackbar('Error', error.toString());
       return [];
     }
     return childrenList;
@@ -178,9 +171,8 @@ class FirebaseFetch {
         'parents/${FirebaseAuth.instance.currentUser!.uid}/$key/children/$childKey',
       );
       await ref.update(children);
-      debugPrint('Data added successfully');
     } catch (e) {
-      debugPrint('Error: $e');
+      Get.snackbar('Error', e.toString());
     }
   }
 
@@ -190,9 +182,8 @@ class FirebaseFetch {
         'parents/${FirebaseAuth.instance.currentUser!.uid}/$key/children/${children['key']}',
       );
       await ref.update(children);
-      debugPrint('Data updated successfully');
     } catch (e) {
-      debugPrint('Error: $e');
+      Get.snackbar('Error', e.toString());
     }
   }
 
@@ -203,7 +194,7 @@ class FirebaseFetch {
       );
       await db.remove();
     } catch (e) {
-      debugPrint('Error $e');
+      Get.snackbar('Error', e.toString());
     }
   }
 }

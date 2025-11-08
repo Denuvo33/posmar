@@ -45,7 +45,7 @@ class ChildrenModel {
       'lingkarLengan': lingkarLengan,
       'keterangan': keterangan,
       'key': key,
-      'created_At': DateTime.now().toString(),
+      'created_At': createdAt,
     };
   }
 }

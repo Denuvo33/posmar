@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:posmar/controller/parent_controller.dart';
 import 'package:posmar/model/children_model.dart';
 
@@ -26,6 +27,10 @@ class _CreateActivityChildrenState extends State<CreateActivityChildren> {
   final TextEditingController _tinggiBadan = TextEditingController();
   final TextEditingController _lingkarLengan = TextEditingController();
   final TextEditingController _keterangan = TextEditingController();
+  final TextEditingController _dateAActivityController =
+      TextEditingController();
+
+  var selectedDate = DateTime.now();
 
   var controller = Get.find<ParentController>();
   bool _isLoading = false;
@@ -43,13 +48,50 @@ class _CreateActivityChildrenState extends State<CreateActivityChildren> {
   @override
   void initState() {
     super.initState();
+    _dateAActivityController.text = DateFormat(
+      'dd-MMMM-yyyy',
+    ).format(selectedDate);
     if (widget.activity != null) {
       _lingkarKepala.text = widget.activity!.lingkarKepala.toString();
       _beratBadan.text = widget.activity!.beratBadan.toString();
       _tinggiBadan.text = widget.activity!.tinggiBadan.toString();
       _lingkarLengan.text = widget.activity!.lingkarLengan.toString();
       _keterangan.text = widget.activity!.keterangan.toString();
-      debugPrint('activity key in edit : ${widget.activity!.key}');
+      selectedDate = DateTime.parse(widget.activity!.createdAt);
+      _dateAActivityController.text = DateFormat(
+        'dd-MMMM-yyyy',
+      ).format(selectedDate);
+    }
+  }
+
+  Future<void> _selectDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Colors.green[700]!,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() {
+        selectedDate = picked;
+        _dateAActivityController.text = DateFormat(
+          'dd-MMMM-yyyy',
+        ).format(picked);
+      });
+      debugPrint('date activity: ${selectedDate.toString()}');
     }
   }
 
@@ -69,7 +111,10 @@ class _CreateActivityChildrenState extends State<CreateActivityChildren> {
             tinggiBadan: _tinggiBadan.text,
             lingkarLengan: _lingkarLengan.text,
             keterangan: _keterangan.text,
-            createdAt: widget.activity!.createdAt,
+            createdAt:
+                widget.activity!.createdAt != selectedDate.toString()
+                    ? selectedDate.toString()
+                    : widget.activity!.createdAt,
             key: widget.activity!.key,
           ),
           widget.keyParent,
@@ -93,13 +138,14 @@ class _CreateActivityChildrenState extends State<CreateActivityChildren> {
             tinggiBadan: _tinggiBadan.text,
             lingkarLengan: _lingkarLengan.text,
             keterangan: _keterangan.text,
-            createdAt: DateTime.now().toString(),
+            createdAt: selectedDate.toString(),
             key: key,
           ),
           widget.keyParent,
           widget.child['key'],
           key,
         );
+        debugPrint('create activity date: $selectedDate');
       }
 
       await controller.fetchActivity(widget.keyParent, widget.child['key']);
@@ -203,6 +249,18 @@ class _CreateActivityChildrenState extends State<CreateActivityChildren> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const SizedBox(height: 10),
+
+                    TextFormField(
+                      controller: _dateAActivityController,
+                      readOnly: true,
+                      onTap: _selectDate,
+                      decoration: InputDecoration(
+                        labelText: 'Tanggal Aktivitas',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
 
                     // Berat Badan
                     _buildTextField(

@@ -465,9 +465,6 @@ class _ChildrenDetailsScreenState extends State<ChildrenDetailsScreen> {
                                                     ],
                                                   ),
                                                   onTap: () {
-                                                    debugPrint(
-                                                      'Activity to edit: ${activity.key}',
-                                                    );
                                                     Future.delayed(
                                                       Duration.zero,
                                                       () => Get.to(
